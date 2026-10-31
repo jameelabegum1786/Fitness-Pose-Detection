@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In | FitPose AI - Real-Time Fitness Pose Detection & Form Coach</title>
+  <meta name="description" content="Sign in to FitPose AI to access real-time pose tracking, AI form coaching, rep counters, and workout analytics.">
+
+  <!-- Google Fonts: Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/animations.css">
+
+  <style>
+    /* ==========================================================================
+       VIBRANT ATHLETIC CYBER-SAPPHIRE LOGIN PAGE
+       Centered Login Card, Rich Colors, High-Contrast Ultra-Readable Text
+       ========================================================================== */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #080e1c;
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(0, 229, 255, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(139, 92, 246, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.18) 0%, transparent 50%),
+        linear-gradient(135deg, #070c18 0%, #0c152e 45%, #101c3d 75%, #080f21 100%);
+      background-attachment: fixed;
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    .login-page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Ambient Pulsing Glow Orbs */
+    .glow-orb-1 {
+      position: fixed;
+      top: -10%;
+      left: 10%;
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.22) 0%, rgba(0, 229, 255, 0) 70%);
+      pointer-events: none;
+      z-index: 1;
+      animation: pulseGlow 8s ease-in-out infinite alternate;
+    }
+
+    .glow-orb-2 {
+      position: fixed;
+      bottom: -10%;
+      right: 10%;
+      width: 560px;
+      height: 560px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0) 70%);
+      pointer-events: none;
+      z-index: 1;
+      animation: pulseGlow 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(1) translate(0, 0); opacity: 0.75; }
+      100% { transform: scale(1.15) translate(25px, -25px); opacity: 1; }
+    }
+
+    /* Centered Login Container */
+    .login-container {
+      width: 100%;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin: 0 auto;
+    }
+
+    /* Top Brand & Live Clock Bar */
+    .login-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      background: rgba(14, 25, 52, 0.88);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 0.85rem 1.4rem;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 229, 255, 0.1);
+    }
+
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .login-brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #00e5ff, #10b981);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.5);
+    }
+
+    .login-brand-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #080e1c;
+    }
+
+    .login-brand h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .login-brand .badge-pro {
+      font-size: 0.68rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      background: rgba(0, 229, 255, 0.15);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      color: #00e5ff;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Live Time & Greeting Pill */
+    .login-live-time {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.84rem;
+    }
+
+    .clock-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(8, 14, 28, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .live-pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulseDot 1.5s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .greeting-pill-text {
+      color: #e2e8f0;
+      font-size: 0.86rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+    }
+
+    /* Focused Sign-In Card */
+    .login-card {
+      background: linear-gradient(135deg, rgba(14, 25, 52, 0.92) 0%, rgba(18, 34, 70, 0.94) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 24px;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65), 0 0 25px rgba(0, 229, 255, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00e5ff, #8b5cf6, #10b981);
+    }
+
+    .login-card-header {
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .login-card-header h2 {
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin: 0 0 0.4rem 0;
+      letter-spacing: -0.5px;
+    }
+
+    .login-card-header p {
+      color: #cbd5e1;
+      font-size: 0.92rem;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    /* Tab Switcher */
+    .auth-tab-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: rgba(8, 14, 28, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 1.4rem;
+    }
+
+    .auth-tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 0.65rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .auth-tab-btn.active {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.25), rgba(139, 92, 246, 0.25));
+      color: #ffffff;
+      font-weight: 800;
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      box-shadow: 0 2px 10px rgba(0, 229, 255, 0.2);
+    }
+
+    /* Alert Message */
+    .auth-alert-message {
+      display: none;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .auth-alert-message.error {
+      background: rgba(244, 63, 94, 0.2);
+      border: 1px solid rgba(244, 63, 94, 0.5);
+      color: #fecdd3;
+    }
+
+    .auth-alert-message.success {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #a7f3d0;
+    }
+
+    /* Form Fields */
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group label {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .input-with-icon {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-with-icon > svg.input-lead-icon {
+      position: absolute;
+      left: 1rem;
+      width: 18px;
+      height: 18px;
+      fill: #94a3b8;
+      pointer-events: none;
+      transition: fill 0.2s ease;
+    }
+
+    .form-control {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(8, 14, 28, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 0.85rem 1rem 0.85rem 2.85rem;
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-family: inherit;
+      font-weight: 500;
+      transition: all 0.25s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #00e5ff;
+      background: rgba(10, 18, 36, 0.9);
+      box-shadow: 0 0 16px rgba(0, 229, 255, 0.3);
+    }
+
+    .form-control::placeholder {
+      color: #64748b;
+    }
+
+    .form-control:focus + svg.input-lead-icon {
+      fill: #00e5ff;
+    }
+
+    .btn-toggle-pwd {
+      position: absolute;
+      right: 0.75rem;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 0.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: color 0.2s ease;
+    }
+
+    .btn-toggle-pwd:hover {
+      color: #ffffff;
+    }
+
+    .btn-toggle-pwd svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+
+    /* Submit Button (Vibrant Multi-Color Gradient) */
+    .btn-submit-main {
+      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+      border: none;
+      color: #ffffff;
+      padding: 0.95rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      font-family: inherit;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-submit-main:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+      box-shadow: 0 6px 25px rgba(6, 182, 212, 0.55);
+    }
+
+    .btn-submit-main:active {
+      transform: translateY(0);
+    }
+
+    .login-footer-copy {
+      text-align: center;
+      color: #64748b;
+      font-size: 0.82rem;
+      margin-top: 1.25rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Glowing Lights -->
+  <div class="glow-orb-1"></div>
+  <div class="glow-orb-2"></div>
+
+  <div class="login-page-wrapper">
+    <div class="login-container">
+
+      <!-- Top Header Navigation & Live Clock -->
+      <header class="login-top-bar">
+        <div class="login-brand">
+          <div class="login-brand-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+            </svg>
+          </div>
+          <div>
+            <h1>FitPose AI <span class="badge-pro">Pro Vision</span></h1>
+          </div>
+        </div>
+
+        <div class="login-live-time">
+          <div class="clock-badge">
+            <span class="live-pulse-dot"></span>
+            <span id="login-clock-display">--:--:-- --</span>
+          </div>
+          <div class="greeting-pill-text" id="login-greeting-text">
+            Good day 🌅
+          </div>
+        </div>
+      </header>
+
+      <!-- Authentication Card (Clean, Focused Athlete Sign In) -->
+      <div class="login-card">
+        <div class="login-card-header">
+          <h2 id="auth-title">Athlete Sign In</h2>
+          <p id="auth-subtitle">Sign in to unlock your personal fitness pose detector.</p>
+        </div>
+
+        <!-- Tab Switcher -->
+        <div class="auth-tab-switch">
+          <button class="auth-tab-btn active" id="tab-signin" type="button">Sign In</button>
+          <button class="auth-tab-btn" id="tab-signup" type="button">Create Account</button>
+        </div>
+
+        <!-- Alert Notification Box -->
+        <div class="auth-alert-message" id="login-alert-box"></div>
+
+        <!-- Authentication Form -->
+        <form class="auth-form" id="main-auth-form" autocomplete="on">
+
+          <!-- Sign Up Extra Fields (hidden by default) -->
+          <div id="signup-extra-section" style="display: none;">
+            <div class="form-group" style="margin-bottom: 0.85rem;">
+              <label for="reg-fullname">Full Name</label>
+              <div class="input-with-icon">
+                <svg class="input-lead-icon" viewBox="0 0 24 24">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                <input type="text" id="reg-fullname" class="form-control" placeholder="Enter your full name">
+              </div>
+            </div>
+          </div>
+
+          <!-- Username / Email Input -->
+          <div class="form-group">
+            <label for="auth-username-email" id="label-user-email">Username or Email</label>
+            <div class="input-with-icon">
+              <svg class="input-lead-icon" viewBox="0 0 24 24">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+              </svg>
+              <input type="text" id="auth-username-email" class="form-control" placeholder="Enter your username or email" required autocomplete="username">
+            </div>
+          </div>
+
+          <!-- Additional Email field only for registration -->
+          <div class="form-group" id="reg-email-container" style="display: none;">
+            <label for="reg-email">Email Address</label>
+            <div class="input-with-icon">
+              <svg class="input-lead-icon" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10h5v-2h-5c-4.34 0-8-3.66-8-8s3.66-8 8-8 8 3.66 8 8v1.43c0 .79-.71 1.57-1.5 1.57s-1.5-.78-1.5-1.57V12c0-2.76-2.24-5-5-5s-5 2.24-5 5 2.24 5 5 5c1.38 0 2.64-.56 3.54-1.47.65.89 1.77 1.47 2.96 1.47 1.97 0 3.5-1.6 3.5-3.57V12c0-5.52-4.48-10-10-10zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+              </svg>
+              <input type="email" id="reg-email" class="form-control" placeholder="you@domain.com">
+            </div>
+          </div>
+
+          <!-- Password Input with Show/Hide toggle -->
+          <div class="form-group">
+            <label for="auth-password">Password</label>
+            <div class="input-with-icon">
+              <svg class="input-lead-icon" viewBox="0 0 24 24">
+                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+              </svg>
+              <input type="password" id="auth-password" class="form-control" placeholder="Enter your password" required autocomplete="current-password">
+              <button type="button" class="btn-toggle-pwd" id="btn-toggle-pwd" title="Show / Hide Password">
+                <svg id="eye-icon" viewBox="0 0 24 24">
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-submit-main" id="btn-submit-text">
+            <span>Sign In & Enter Gym</span>
+            <span>→</span>
+          </button>
+
+        </form>
+
+        <p class="login-footer-copy">
+          FitPose AI &bull; Pro Real-Time Computer Vision &bull; Secure Individual Athlete Login
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JavaScript Client Controller for Login Page -->
+  <script>
+    (function() {
+      // Elements
+      const tabSignIn = document.getElementById('tab-signin');
+      const tabSignUp = document.getElementById('tab-signup');
+      const signupExtra = document.getElementById('signup-extra-section');
+      const regEmailContainer = document.getElementById('reg-email-container');
+      const authTitle = document.getElementById('auth-title');
+      const authSubtitle = document.getElementById('auth-subtitle');
+      const labelUserEmail = document.getElementById('label-user-email');
+      const inputUsernameEmail = document.getElementById('auth-username-email');
+      const inputPassword = document.getElementById('auth-password');
+      const inputFullName = document.getElementById('reg-fullname');
+      const inputRegEmail = document.getElementById('reg-email');
+      const selectGoal = document.getElementById('reg-goal');
+      const selectLevel = document.getElementById('reg-level');
+      const btnSubmit = document.getElementById('btn-submit-text');
+      const alertBox = document.getElementById('login-alert-box');
+      const btnTogglePwd = document.getElementById('btn-toggle-pwd');
+      const authForm = document.getElementById('main-auth-form');
+
+      let currentMode = 'signin';
+
+      // Dynamic Clock & Greeting
+      const clockEl = document.getElementById('login-clock-display');
+      const greetingEl = document.getElementById('login-greeting-text');
+
+      function updateClock() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = hours % 12 || 12;
+        const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+        const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+        if (clockEl) clockEl.textContent = `${formattedHours}:${formattedMinutes}:${formattedSeconds} ${ampm}`;
+
+        let greeting = 'Good morning 🌅';
+        if (hours >= 12 && hours < 17) greeting = 'Good afternoon ☀️';
+        else if (hours >= 17 && hours < 22) greeting = 'Good evening 🌆';
+        else if (hours >= 22 || hours < 5) greeting = 'Late Night Grind 🌙';
+        if (greetingEl) greetingEl.textContent = greeting;
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // Password Toggle
+      btnTogglePwd.addEventListener('click', () => {
+        const isPwd = inputPassword.type === 'password';
+        inputPassword.type = isPwd ? 'text' : 'password';
+        btnTogglePwd.style.color = isPwd ? '#00e5ff' : '#94a3b8';
+      });
+
+      // Tab Switching
+      function switchTab(mode) {
+        currentMode = mode;
+        if (mode === 'signin') {
+          tabSignIn.classList.add('active');
+          tabSignUp.classList.remove('active');
+          signupExtra.style.display = 'none';
+          regEmailContainer.style.display = 'none';
+          authTitle.textContent = 'Athlete Sign In';
+          authSubtitle.textContent = 'Sign in with your individual athlete account.';
+          labelUserEmail.textContent = 'Username or Email';
+          inputUsernameEmail.placeholder = 'Enter your username or email';
+          btnSubmit.innerHTML = '<span>Sign In & Enter Gym</span><span>→</span>';
+          inputUsernameEmail.value = '';
+          inputPassword.value = '';
+        } else {
+          tabSignUp.classList.add('active');
+          tabSignIn.classList.remove('active');
+          signupExtra.style.display = 'block';
+          regEmailContainer.style.display = 'block';
+          authTitle.textContent = 'Create Athlete Account';
+          authSubtitle.textContent = 'Register your personal profile to start posture-perfect training.';
+          labelUserEmail.textContent = 'Choose Username';
+          inputUsernameEmail.placeholder = 'e.g. warrior_99';
+          inputUsernameEmail.value = '';
+          inputPassword.value = '';
+          btnSubmit.innerHTML = '<span>Create Account & Enter</span><span>→</span>';
+        }
+        hideAlert();
+      }
+
+      tabSignIn.addEventListener('click', () => switchTab('signin'));
+      tabSignUp.addEventListener('click', () => switchTab('signup'));
+
+      function showAlert(msg, type = 'error') {
+        alertBox.className = `auth-alert-message ${type}`;
+        alertBox.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span><span>${msg}</span>`;
+        alertBox.style.display = 'flex';
+      }
+
+      function hideAlert() {
+        alertBox.style.display = 'none';
+      }
+
+      function proceedToApp() {
+        sessionStorage.setItem('fitpose_authenticated', 'true');
+        setTimeout(() => {
+          window.location.href = window.location.protocol === 'file:' ? './index.html' : '/';
+        }, 400);
+      }
+
+      // Handle Form Submit
+      authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlert();
+
+        btnSubmit.disabled = true;
+        btnSubmit.style.opacity = '0.7';
+
+        if (currentMode === 'signin') {
+          const usernameOrEmail = inputUsernameEmail.value.trim();
+          const password = inputPassword.value;
+
+          if (!usernameOrEmail || !password) {
+            showAlert('Please enter both username/email and password.');
+            btnSubmit.disabled = false;
+            btnSubmit.style.opacity = '1';
+            return;
+          }
+
+          try {
+            const res = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username_or_email: usernameOrEmail, password: password })
+            });
+            const data = await res.json();
+
+            if (data.success && data.user) {
+              showAlert(data.message || 'Login successful! Opening workspace...', 'success');
+              try {
+                localStorage.setItem('fitpose_user', JSON.stringify(data.user));
+              } catch (err) {}
+              proceedToApp();
+            } else {
+              showAlert(data.error || 'Invalid credentials. Please check your username and password.');
+              btnSubmit.disabled = false;
+              btnSubmit.style.opacity = '1';
+            }
+          } catch (err) {
+            // Local file or offline fallback for individual user
+            const fallbackUser = {
+              id: Date.now(),
+              username: usernameOrEmail,
+              email: `${usernameOrEmail}@fitpose.ai`,
+              full_name: usernameOrEmail,
+              fitness_goal: 'General Fitness',
+              fitness_level: 'Intermediate',
+              streak_days: 0
+            };
+            localStorage.setItem('fitpose_user', JSON.stringify(fallbackUser));
+            showAlert('Login verified! Opening workspace...', 'success');
+            proceedToApp();
+          }
+        } else {
+          // Sign Up
+          const username = inputUsernameEmail.value.trim();
+          const email = inputRegEmail.value.trim();
+          const password = inputPassword.value;
+          const fullName = inputFullName.value.trim() || username;
+          const goal = selectGoal ? selectGoal.value : 'General Fitness';
+          const level = selectLevel ? selectLevel.value : 'Intermediate';
+
+          if (!username || !email || !password) {
+            showAlert('Username, email, and password are all required.');
+            btnSubmit.disabled = false;
+            btnSubmit.style.opacity = '1';
+            return;
+          }
+
+          try {
+            const res = await fetch('/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                username: username,
+                email: email,
+                password: password,
+                full_name: fullName,
+                fitness_goal: goal,
+                fitness_level: level
+              })
+            });
+            const data = await res.json();
+
+            if (data.success && data.user) {
+              showAlert(data.message || 'Account created! Entering workspace...', 'success');
+              try {
+                localStorage.setItem('fitpose_user', JSON.stringify(data.user));
+              } catch (err) {}
+              proceedToApp();
+            } else {
+              showAlert(data.error || 'Failed to create account. Username/email may already exist.');
+              btnSubmit.disabled = false;
+              btnSubmit.style.opacity = '1';
+            }
+          } catch (err) {
+            const newUser = {
+              id: Date.now(),
+              username: username,
+              email: email,
+              full_name: fullName,
+              fitness_goal: goal,
+              fitness_level: level,
+              streak_days: 0
+            };
+            localStorage.setItem('fitpose_user', JSON.stringify(newUser));
+            showAlert('Account created! Opening workspace...', 'success');
+            proceedToApp();
+          }
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitPose AI - Real-Time Fitness Pose Detection & Form Correction Coach</title>
+  <meta name="description" content="AI-powered fitness pose detection app with real-time form correction, rep tracking, dynamic greetings, and personalized voice coaching.">
+
+  <!-- Google Fonts: Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/animations.css">
+
+  <!-- MediaPipe Pose Dependencies via Google CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+
+  <!-- Immediate Login Authentication Verification -->
+  <script>
+    (function() {
+      const isFile = window.location.protocol === 'file:';
+      const isAuth = sessionStorage.getItem('fitpose_authenticated') === 'true';
+      if (!isAuth) {
+        if (isFile) {
+          window.location.replace('./login.html');
+        } else {
+          window.location.replace('/login');
+        }
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- ==========================================================================
+         TOP HEADER BAR (BRAND, LIVE CLOCK & GREETING, USER PROFILE)
+         ========================================================================== -->
+    <header class="main-header">
+      <div class="brand-section">
+        <div class="brand-logo-icon">
+          <!-- Dynamic Fitness Pose / Dumbbell SVG -->
+          <svg viewBox="0 0 24 24">
+            <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>FitPose AI <span class="brand-badge">Pro Vision</span></h1>
+        </div>
+      </div>
+
+      <!-- Live Dynamic Clock & Greeting Pill -->
+      <div class="time-greeting-pill" id="time-greeting-pill">
+        <div class="live-clock-badge">
+          <span class="live-dot"></span>
+          <span id="live-clock-display">--:--:-- --</span>
+        </div>
+        <div class="greeting-text-badge" id="header-greeting-text">
+          Good morning 🌅
+        </div>
+      </div>
+
+      <!-- User & Action Controls -->
+      <div class="header-actions">
+        <!-- Theme Toggle: Light / Dark Mode -->
+        <button class="btn-header-action" id="btn-theme-toggle" title="Switch Theme (Light / Dark)">
+          <span id="theme-toggle-icon">🌙</span>
+          <span id="theme-toggle-text">Dark Mode</span>
+        </button>
+
+        <button class="btn-header-action" id="btn-view-history" title="View Workout Log">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+          </svg>
+          <span>History</span>
+        </button>
+
+        <div class="user-profile-badge" id="btn-open-login" title="Account / Profile">
+          <div class="user-avatar" id="user-avatar-initials">AR</div>
+          <div class="user-info">
+            <span class="user-name" id="user-profile-name">Alex Rivera</span>
+            <span class="user-streak" id="user-profile-streak">🔥 5d Streak</span>
+          </div>
+        </div>
+
+        <button class="btn-header-action btn-logout" id="btn-header-logout" title="Sign Out">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+          </svg>
+          <span>Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ==========================================================================
+         DYNAMIC GREETING & MOTIVATION HERO BANNER
+         ========================================================================== -->
+    <section class="hero-greeting-card">
+      <div class="greeting-main-col">
+        <h2 class="greeting-headline" id="hero-greeting-title">
+          Good morning, <span class="highlight-name">Alex</span> 🌅
+        </h2>
+        <p class="greeting-subtext" id="hero-greeting-subtext">
+          Start your morning strong with verified posture! | Loading live date and time...
+        </p>
+        <div class="greeting-quote-tag">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
+          </svg>
+          <span id="hero-quote-text">Form is everything: accurate movement builds real strength.</span>
+        </div>
+      </div>
+
+      <div class="greeting-quick-stats">
+        <div class="quick-stat-item">
+          <div class="quick-stat-value" id="quick-streak-stat">0</div>
+          <div class="quick-stat-label">Day Streak 🔥</div>
+        </div>
+        <div class="quick-stat-item">
+          <div class="quick-stat-value" id="quick-accuracy-stat">0%</div>
+          <div class="quick-stat-label">Form Accuracy</div>
+        </div>
+        <div class="quick-stat-item">
+          <div class="quick-stat-value" id="quick-workouts-stat">0</div>
+          <div class="quick-stat-label">Workouts Done</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         MAIN WORKSPACE: CAMERA VIEWPORT & ANALYTICS SIDEBAR
+         ========================================================================== -->
+    <main class="workout-grid">
+
+      <!-- Left: Computer Vision Camera Stage -->
+      <section class="camera-stage-container">
+
+        <!-- Top Stage Toolbar: Exercise Pill Tabs & Camera Toggles -->
+        <div class="camera-top-toolbar">
+          <div class="exercise-selector-bar">
+            <button class="btn-exercise-pill active" data-exercise="squats">
+              <span>🏋️‍♂️</span> Squats
+            </button>
+            <button class="btn-exercise-pill" data-exercise="pushups">
+              <span>🤸</span> Push-Ups
+            </button>
+            <button class="btn-exercise-pill" data-exercise="bicep_curls">
+              <span>💪</span> Bicep Curls
+            </button>
+            <button class="btn-exercise-pill" data-exercise="plank">
+              <span>🧘</span> Plank
+            </button>
+            <button class="btn-exercise-pill" data-exercise="lunges">
+              <span>🦵</span> Lunges
+            </button>
+            <button class="btn-exercise-pill" data-exercise="jumping_jacks">
+              <span>⭐</span> Jumping Jacks
+            </button>
+          </div>
+
+          <div class="camera-toggles">
+            <button class="btn-toggle-badge" id="btn-toggle-lang" title="Toggle Language / భాష మార్చండి (English / తెలుగు)">
+              <span>🌐</span>
+              <span id="lang-indicator">English</span>
+            </button>
+            <button class="btn-toggle-icon active" id="btn-toggle-mirror" title="Mirror Camera">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
+              </svg>
+            </button>
+            <button class="btn-toggle-icon active" id="btn-toggle-voice" title="Voice Coach On/Off">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+              </svg>
+            </button>
+            <button class="btn-toggle-icon active" id="btn-toggle-sfx" title="Sound Effects On/Off">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- The Viewport (Hidden Video + Canvas + Floating HUD Overlay) -->
+        <div class="viewport-wrapper">
+          <!-- Video element receives webcam stream -->
+          <video id="webcam-video" playsinline muted></video>
+
+          <!-- Canvas element renders the video frame + skeleton + HUD tags -->
+          <canvas id="output-canvas"></canvas>
+
+          <!-- Real-Time Pose Feedback Banner (Top Center - Highly Visible Action & Instructions) -->
+          <div class="pose-feedback-banner status-idle" id="pose-feedback-banner">
+            <div class="feedback-badge-icon" id="pose-feedback-icon">
+              <span id="pose-action-icon">🎯</span>
+            </div>
+            <div class="feedback-text-wrap">
+              <div class="feedback-action-headline" id="pose-action-headline">STAND IN CAMERA VIEW</div>
+              <div class="feedback-sub-instruction" id="pose-feedback-text">Step back so your body is clearly visible in the camera</div>
+              <div class="feedback-telugu-hint" id="pose-feedback-telugu">మీ శరీరం కెమెరాలో స్పష్టంగా కనిపించేలా కాస్త వెనక్కి జరగండి</div>
+            </div>
+          </div>
+
+          <!-- Real-Time 3-Step Live Cue Pill on Viewport -->
+          <div class="live-step-tracker" id="live-step-tracker">
+            <div class="step-bubble active" id="step-bubble-1">
+              <span class="step-num">1</span>
+              <span class="step-txt" id="step-txt-1">Start Pose</span>
+            </div>
+            <span class="step-arrow">➔</span>
+            <div class="step-bubble" id="step-bubble-2">
+              <span class="step-num">2</span>
+              <span class="step-txt" id="step-txt-2">The Motion</span>
+            </div>
+            <span class="step-arrow">➔</span>
+            <div class="step-bubble" id="step-bubble-3">
+              <span class="step-num">3</span>
+              <span class="step-txt" id="step-txt-3">Rep Counted</span>
+            </div>
+          </div>
+
+          <!-- Top-Left HUD Info -->
+          <div class="hud-corner-topleft">
+            <div class="hud-exercise-tag">
+              <span>🎯</span>
+              <span id="hud-exercise-name">Squats (Form Depth)</span>
+            </div>
+            <div class="hud-stage-tag" id="hud-stage-name">PHASE: UP</div>
+          </div>
+
+          <!-- Top-Right HUD Info -->
+          <div class="hud-corner-topright">
+            <div class="hud-accuracy-ring-container">
+              <span class="accuracy-label">Form Accuracy</span>
+              <span class="accuracy-value" id="hud-accuracy-val">100%</span>
+            </div>
+          </div>
+
+          <!-- Floating Giant Rep Counter HUD -->
+          <div class="hud-rep-counter-overlay">
+            <div class="hud-rep-number" id="hud-rep-number">0</div>
+            <div class="hud-rep-details">
+              <span class="hud-rep-label">REPS COMPLETED</span>
+              <span class="hud-rep-target">TARGET: 15 REPS</span>
+            </div>
+          </div>
+
+          <!-- Inactive Camera Overlay / Start Prompt -->
+          <div class="camera-overlay-state" id="camera-placeholder-overlay">
+            <div class="camera-state-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+              </svg>
+            </div>
+            <h3 class="camera-state-title">AI Real-Time Pose Detector Ready</h3>
+            <p class="camera-state-desc">
+              Activate your camera to enable high-precision joint angle tracking, instant incorrect posture warnings, and voice coaching.
+            </p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+              <button class="btn-start-camera" id="btn-start-camera">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                <span>Start Camera Workout</span>
+              </button>
+              <button class="btn-header-action" id="btn-start-demo" style="padding: 0.85rem 1.5rem; font-weight:700;">
+                <span>✨ Preview AI Simulation</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Controls Bar -->
+        <div class="camera-bottom-controls">
+          <div class="session-timers">
+            <div class="timer-item">
+              <span class="timer-val" id="timer-workout-duration">00:00</span>
+              <span class="timer-lbl">Duration</span>
+            </div>
+            <div class="timer-item">
+              <span class="timer-val" id="timer-calories">0.0</span>
+              <span class="timer-lbl">Est. Calories (kcal)</span>
+            </div>
+          </div>
+
+          <div class="action-buttons-group">
+            <button class="btn-action btn-reset" id="btn-reset-counter" title="Reset current set count">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+              </svg>
+              <span>Reset Count</span>
+            </button>
+            <button class="btn-action btn-finish-workout" id="btn-finish-workout">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              <span>Finish & Review Form</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Real-Time Metrics & Form Coach Sidebar -->
+      <aside class="workout-sidebar">
+
+        <!-- Live Performance Metrics -->
+        <div class="sidebar-card">
+          <div class="card-header-row">
+            <h3 class="card-title">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+              </svg>
+              Live Form Analytics
+            </h3>
+          </div>
+
+          <!-- Form Accuracy Bar -->
+          <div class="form-accuracy-block">
+            <div class="accuracy-label-row">
+              <span>Pose Accuracy Index</span>
+              <span class="accuracy-pct-badge" id="metric-accuracy-val">100%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="accuracy-progress-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <!-- Key Performance Metrics: Valid Reps -->
+          <div class="metrics-quad-grid">
+            <div class="metric-quad-box">
+              <div class="metric-meta">
+                <span class="metric-icon">⚡</span>
+                <span class="metric-caption">Valid Reps</span>
+              </div>
+              <span class="metric-num" id="metric-reps-count">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time Joint Angles Inspector -->
+        <div class="sidebar-card">
+          <div class="card-header-row">
+            <h3 class="card-title">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.07 4.93l-1.41 1.41C19.1 7.79 20 9.79 20 12c0 4.42-3.58 8-8 8s-8-3.58-8-8c0-2.21.9-4.21 2.34-5.66L4.93 4.93C3.12 6.74 2 9.24 2 12c0 5.52 4.48 10 10 10s10-4.48 10-10c0-2.76-1.12-5.26-2.93-7.07zM12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z"/>
+              </svg>
+              Live Joint Angles
+            </h3>
+          </div>
+          <div class="angles-inspector-list" id="angles-inspector-items">
+            <div class="angle-row-item">
+              <span class="angle-name">Knee Angle</span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="angle-reading">170°</span>
+                <span class="angle-status-dot"></span>
+              </div>
+            </div>
+            <div class="angle-row-item">
+              <span class="angle-name">Torso Alignment</span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="angle-reading">85°</span>
+                <span class="angle-status-dot"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+    </main>
+
+  </div> <!-- End .app-container -->
+
+  <!-- ==========================================================================
+       AUTHENTICATION & USER PROFILE MODAL (LOGIN / SIGN UP)
+       ========================================================================== -->
+  <div class="modal-backdrop" id="auth-modal-backdrop">
+    <div class="modal-dialog">
+      <button class="btn-close-modal" id="btn-close-auth-modal">✕</button>
+
+      <div class="modal-brand-header">
+        <div class="modal-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="#0b0f19">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <h2>Athlete Portal</h2>
+        <p>Sign in to record your workout streaks and form progress</p>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="auth-tab-switch">
+        <button class="auth-tab-btn active" id="tab-btn-signin">Sign In</button>
+        <button class="auth-tab-btn" id="tab-btn-signup">Create Account</button>
+      </div>
+
+      <div class="auth-alert-message" id="auth-alert-message"></div>
+
+      <!-- Form -->
+      <form class="auth-form" id="auth-form">
+        <div id="signup-extra-fields" style="display: none;">
+          <div class="form-group">
+            <label>Full Name</label>
+            <div class="input-with-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+              <input type="text" id="input-fullname" class="form-control" placeholder="Alex Rivera">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Email or Username</label>
+          <div class="input-with-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+            <input type="text" id="input-email" class="form-control" placeholder="Enter username or email" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-with-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+            </svg>
+            <input type="password" id="input-password" class="form-control" placeholder="••••••••" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit-auth" id="btn-auth-submit">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       WORKOUT SUMMARY & PERFORMANCE REPORT MODAL
+       ========================================================================== -->
+  <div class="modal-backdrop" id="summary-modal-backdrop">
+    <div class="modal-dialog">
+      <button class="btn-close-modal" id="btn-close-summary-modal">✕</button>
+
+      <div class="grade-badge-card">
+        <div class="grade-letter" id="summary-grade-letter">A+</div>
+        <div class="grade-title">Form Quality Rating</div>
+        <div class="grade-feedback" id="summary-grade-feedback">
+          Outstanding form and control! Perfect pose alignment.
+        </div>
+      </div>
+
+      <div class="summary-results-grid">
+        <div class="summary-stat-box">
+          <div class="stat-val" id="summary-total-reps">15</div>
+          <div class="stat-sub">Valid Reps</div>
+        </div>
+        <div class="summary-stat-box">
+          <div class="stat-val" id="summary-accuracy-val">96%</div>
+          <div class="stat-sub">Accuracy</div>
+        </div>
+        <div class="summary-stat-box">
+          <div class="stat-val" id="summary-calories-val">34 kcal</div>
+          <div class="stat-sub">Burned</div>
+        </div>
+      </div>
+
+      <div style="text-align:center; font-size:0.85rem; color:#94a3b8; margin-bottom:1.25rem;">
+        Total Time: <strong id="summary-duration-val" style="color:#f8fafc;">03:45</strong>
+      </div>
+
+      <button class="btn-submit-auth" id="btn-save-summary" style="width:100%;">
+        Save to Workout Log & Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       WORKOUT HISTORY LOG MODAL
+       ========================================================================== -->
+  <div class="modal-backdrop" id="history-modal-backdrop">
+    <div class="modal-dialog" style="max-width: 640px;">
+      <button class="btn-close-modal" id="btn-close-history-modal">✕</button>
+
+      <div class="modal-brand-header" style="margin-bottom:1rem;">
+        <h2>Workout History & Log</h2>
+        <p>Review your past sessions, form accuracies, and rep counts</p>
+      </div>
+
+      <div class="history-table-container">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Exercise</th>
+              <th>Reps</th>
+              <th>Accuracy</th>
+              <th>Calories</th>
+              <th>Date / Duration</th>
+            </tr>
+          </thead>
+          <tbody id="history-table-body">
+            <!-- Dynamically populated from API / storage -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic Scripts -->
+  <script src="/static/js/audioCoach.js"></script>
+  <script src="/static/js/exercises.js"></script>
+  <script src="/static/js/poseDetector.js"></script>
+  <script src="/static/js/storage.js"></script>
+  <script src="/static/js/app.js"></script>
+
+</body>
+</html>
